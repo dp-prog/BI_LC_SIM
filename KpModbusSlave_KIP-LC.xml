@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<DevTemplate>
+  <Settings>
+    <ZeroAddr>false</ZeroAddr>
+    <DecAddr>false</DecAddr>
+    <DefByteOrder2 />
+    <DefByteOrder4 />
+    <DefByteOrder8 />
+  </Settings>
+  <ElemGroups>
+    <ElemGroup active="true" tableType="HoldingRegisters" address="47" name="Запрос 1">
+      <Elem name="Системное время" type="uint" byteOrder="" />
+      <Elem name="" type="ushort" byteOrder="" />
+      <Elem name="Коэффициент суммарного потенциала" type="ushort" byteOrder="" />
+      <Elem name="Коэффициент поляризационного потенциала" type="ushort" byteOrder="" />
+      <Elem name="Коэффициент тока поляризации" type="ushort" byteOrder="" />
+      <Elem name="" type="ushort" byteOrder="" />
+      <Elem name="" type="ushort" byteOrder="" />
+      <Elem name="" type="ushort" byteOrder="" />
+      <Elem name="" type="ushort" byteOrder="" />
+      <Elem name="" type="ushort" byteOrder="" />
+      <Elem name="" type="ushort" byteOrder="" />
+      <Elem name="" type="ushort" byteOrder="" />
+      <Elem name="" type="ushort" byteOrder="" />
+      <Elem name="" type="ushort" byteOrder="" />
+      <Elem name="ID" type="ushort" byteOrder="" />
+      <Elem name="ID Change" type="ushort" byteOrder="" />
+      <Elem name="Idetificator" type="ushort" byteOrder="" />
+    </ElemGroup>
+  </ElemGroups>
+  <Cmds>
+    <Cmd tableType="HoldingRegisters" multiple="true" address="0" elemType="ushort" elemCnt="1" byteOrder="" cmdNum="1" name="Номер устройства (ID)" />
+    <Cmd tableType="HoldingRegisters" multiple="true" address="3" elemType="ushort" elemCnt="1" byteOrder="" cmdNum="2" name="Номер пакета" />
+    <Cmd tableType="HoldingRegisters" multiple="true" address="4" elemType="ushort" elemCnt="1" byteOrder="" cmdNum="3" name="Напряжение питания" />
+    <Cmd tableType="HoldingRegisters" multiple="true" address="6" elemType="ushort" elemCnt="1" byteOrder="" cmdNum="4" name="Флаги состояния" />
+    <Cmd tableType="HoldingRegisters" multiple="true" address="15" elemType="short" elemCnt="1" byteOrder="" cmdNum="5" name="Суммарный потенциал" />
+    <Cmd tableType="HoldingRegisters" multiple="true" address="16" elemType="short" elemCnt="1" byteOrder="" cmdNum="6" name="Поляризационный потенциал" />
+    <Cmd tableType="HoldingRegisters" multiple="true" address="17" elemType="short" elemCnt="1" byteOrder="" cmdNum="7" name="Ток поляризации" />
+  </Cmds>
+</DevTemplate>

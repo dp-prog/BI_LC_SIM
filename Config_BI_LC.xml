@@ -1,0 +1,56 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BIConfig>
+  <!--Common Parameters-->
+  <CommonParams>
+    <Param name="SoftVer" value="0.01" descr="Version of software" />
+    <Param name="CommLineGPRS" value="true" descr="Enable or disable GPRS" />
+    <Param name="ServerPort" value="true" descr="SCADA-Server TCP port number" />
+    <Param name="ServerUser" value="ScadaComm" descr="User name for the connection to SCADA-Server" />
+    <Param name="ServerPwd" value="12345" descr="User password for the connection to SCADA-Server" />
+    <Param name="ServerTimeout" value="10000" descr="SCADA-Server response timeout, ms" />
+    <Param name="WaitForStop" value="10000" descr="Wait for communication lines termination, ms" />
+    <Param name="SendModData" value="true" descr="Send only modified device tags" />
+    <Param name="SendAllDataPer" value="60" descr="Period of sending all device tags, sec" />
+  </CommonParams>
+  <!--Communication Lines-->
+  <CommLines>
+    <!--Line 1-->
+    <CommLineRS485  active="true" name="BI-RS485" number="1" descr="Enable or disable RS485">
+      <CommChannel type="Serial">
+        <Param name="BaudRate" value="9600" />
+        <Param name="Behavior" value="Slave" />
+        <Param name="CollisionControl" value="true" />
+      </CommChannel>
+      <LineParams>
+        <Param name="ModbusType" value="RTU" descr="RTU or ASCII model"/>
+      </LineParams>
+      <CustomParams />
+      <ReqSequence />
+    </CommLineRS485>
+    <!--Line 2-->
+    <CommLineGPRS active="true" name="BI-GPRS" number="2" descr="Enable or disable GPRS">
+      <CommChannel type="GPRS">
+        <Param name="BaudRate" value="115200" />
+        <Param name="Behavior" value="Master" descr="Master or Slave"/>
+        <Param name="Host" value="213.147.192.25" />
+        <Param name="ReconnectAfter" value="100" />
+        <Param name="StayConnected" value="True" />
+        <Param name="TcpPort" value="502" />
+        <Param name="PingTimeout" value="60000" />
+      </CommChannel>
+      <LineParams />
+      <CustomParams>
+        <Param name="TransMode" value="TCP" descr="TCP or OverTCP"/>
+      </CustomParams>
+      <ReqSequence />
+    </CommLineGPRS>
+    <!--Line 3-->
+    <CommLineBT active="true" name="KIP-GPRS" number="3" descr="Enable or disable BlueTooth">
+      <CommChannel type="BT">
+        <Param name="BIName" value="BI-LC" />
+      </CommChannel>
+      <LineParams />
+      <CustomParams />
+    </CommLineBT>
+  </CommLines>
+</BIConfig>

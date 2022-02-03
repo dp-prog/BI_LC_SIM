@@ -1,0 +1,22 @@
+#ifndef _GSM_H_
+#define _GSM_H_
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#define CONFIG_MB_UART_PORT_NUM		2		/* Number of UART port used for Modbus connection */
+#define CONFIG_MB_UART_BAUD_RATE	9600	/* The communication speed of the UART */
+
+#define CONFIG_MB_UART_RXD			34
+#define CONFIG_MB_UART_TXD			12
+#define CONFIG_MB_UART_RTS			4
+
+
+static esp_err_t master_init(void);
+
+
+
+#ifdef __cplusplus
+}
+#endif
+#endif
