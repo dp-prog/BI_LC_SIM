@@ -1,4 +1,5 @@
-/* BI_LC_SIM
+/* BI_LC_SIM 800
+
 */
 #include "freertos/FreeRTOS.h"
 
@@ -44,7 +45,7 @@
 #define GAIN ADS111X_GAIN_4V096		// +-4.096V
 static float gain_val;				// Gain value
 
-// I2C addresses - прикольная инициализация только тех адресов, которые используются
+// I2C addresses - пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 #define DEV_COUNT 1   // 1 ICs
 static const uint8_t addr[DEV_COUNT] = {ADS111X_ADDR_GND, ADS111X_ADDR_VCC, ADS111X_ADDR_SDA, ADS111X_ADDR_SCL};
 
@@ -54,7 +55,7 @@ static i2c_dev_t devices[DEV_COUNT];
 
 
 
-// Буфер для хранения отчета, записываемого на sd-карту
+// пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ sd-пїЅпїЅпїЅпїЅпїЅ
 
 
 // setup datetime: 2022-01-19 13:50:10
@@ -219,16 +220,16 @@ void sim800_task(void *pvParameters){
 
 void app_main(void)
 {
-	// Подготовка GPIO
-	// Удержание включенного БП
+	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ GPIO
+	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ
 	gpio_reset_pin(GPIO_Pwr_On);	gpio_set_direction(GPIO_Pwr_On, GPIO_MODE_OUTPUT);		gpio_set_level(Pwr_On);
-	// Светодиод
+	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	gpio_reset_pin(GPIO_Led_1);		gpio_set_direction(GPIO_Led_1, GPIO_MODE_OUTPUT);		gpio_set_level(GPIO_Led_1, 1);
-	// Подготовка SIM800
+	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ SIM800
 	gpio_reset_pin(GPIO_SIM_Stat);	gpio_set_direction(GPIO_SIM_Stat, GPIO_MODE_INPUT);		gpio_set_level(GPIO_SIM_Stat, 1); gpio_set_pull_mode(GPIO_SIM_Stat, GPIO_PULLUP_ONLY);
 	gpio_reset_pin(GPIO_SIM_Rst);	gpio_set_direction(GPIO_SIM_Rst, GPIO_MODE_OUTPUT_OD);	gpio_set_level(GPIO_SIM_Rst, 1);
 
-	// инициализация SIM
+	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ SIM
 //	gsmInit(17, 16, 115200, 1);
 //    xTaskCreate(sim800_task, "sim800_task", configMINIMAL_STACK_SIZE * 8, NULL, 7, NULL);
 //    gsmWrite("AT\n");
@@ -289,7 +290,7 @@ void app_main(void)
     master_operation_func(NULL);
 
 
-//	// моргаю, если сюда дошел. Позже сюда поставить собаку. todo
+//	// пїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ. пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ. todo
 	int level = 0;
 	while (true) {
 		gpio_set_level(GPIO_Led_1, level);
