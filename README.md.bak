@@ -1,5 +1,20 @@
-# BI-LC (ESP32 SIM800 ver.0
+# SD Card example
 
+(See the README.md file in the upper level 'examples' directory for more information about examples.)
+
+This example demonstrates how to use an SD card with an ESP device. Example does the following steps:
+
+1. Use an "all-in-one" `esp_vfs_fat_sdmmc_mount` function to:
+    - initialize SDMMC peripheral,
+    - probe and initialize the card connected to SD/MMC slot 1 (HS2_CMD, HS2_CLK, HS2_D0, HS2_D1, HS2_D2, HS2_D3 lines),
+    - mount FAT filesystem using FATFS library (and format card, if the filesystem can not be mounted),
+    - register FAT filesystem in VFS, enabling C standard library and POSIX functions to be used.
+2. Print information about the card, such as name, type, capacity, and maximum supported frequency.
+3. Create a file using `fopen` and write to it using `fprintf`.
+4. Rename the file. Before renaming, check if destination file already exists using `stat` function, and remove it using `unlink` function.
+5. Open renamed file for reading, read back the line, and print it to the terminal.
+
+This example support SD (SDSC, SDHC, SDXC) cards and eMMC chips.
 
 ## Hardware
 
