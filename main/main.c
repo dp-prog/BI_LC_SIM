@@ -1,5 +1,8 @@
 /* BI_LC_SIM 800
 test
+
+привет
+
 */
 #include "freertos/FreeRTOS.h"
 
