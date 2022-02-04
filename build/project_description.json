@@ -6,7 +6,7 @@
     "config_defaults":    "",
     "app_elf":            "BI_LC_SIM.elf",
     "app_bin":            "BI_LC_SIM.bin",
-    "git_revision":       "v4.3.1",
+    "git_revision":       "v4.3.1-dirty",
     "target":             "esp32",
     "phy_data_partition": "",
     "monitor_baud" :      "115200",

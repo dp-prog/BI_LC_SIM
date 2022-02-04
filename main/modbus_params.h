@@ -103,18 +103,17 @@ extern discrete_reg_params_t	discrete_reg_params;
 #define MB_SLAVE_ADDR   (CONFIG_MB_SLAVE_ADDR)      // The address of device in Modbus network
 #define MB_DEV_SPEED    (CONFIG_MB_UART_BAUD_RATE)  // The communication speed of the UART
 
-#define HOLD_OFFSET(field) ((uint16_t)(offsetof(holding_reg_params_t, field) >> 1))
-#define INPUT_OFFSET(field) ((uint16_t)(offsetof(input_reg_params_t, field) >> 1))
-#define MB_REG_DISCRETE_INPUT_START         (0x0000)
-#define MB_REG_COILS_START                  (0x0000)
-#define MB_REG_INPUT_START		            (INPUT_OFFSET(input_data[0]))		// register offset input area 0
-#define MB_REG_HOLDING_START		        (HOLD_OFFSET(holding_data[0]))
-
-#define MB_PAR_INFO_GET_TOUT                (10) // Timeout for get parameter info
-#define MB_READ_MASK                        (MB_EVENT_INPUT_REG_RD | MB_EVENT_HOLDING_REG_RD \
-                                                | MB_EVENT_DISCRETE_RD | MB_EVENT_COILS_RD)
-#define MB_WRITE_MASK                       (MB_EVENT_HOLDING_REG_WR | MB_EVENT_COILS_WR)
-#define MB_READ_WRITE_MASK                  (MB_READ_MASK | MB_WRITE_MASK)
+//#define HOLD_OFFSET(field) ((uint16_t)(offsetof(holding_reg_params_t, field) >> 1))
+//#define INPUT_OFFSET(field) ((uint16_t)(offsetof(input_reg_params_t, field) >> 1))
+//#define MB_REG_DISCRETE_INPUT_START         (0x0000)
+//#define MB_REG_COILS_START                  (0x0000)
+//#define MB_REG_INPUT_START		            (INPUT_OFFSET(input_data[0]))		// register offset input area 0
+//#define MB_REG_HOLDING_START		        (HOLD_OFFSET(holding_data[0]))
+//
+//#define MB_PAR_INFO_GET_TOUT                (10) // Timeout for get parameter info
+//#define MB_READ_MASK                        (MB_EVENT_INPUT_REG_RD | MB_EVENT_HOLDING_REG_RD | MB_EVENT_DISCRETE_RD | MB_EVENT_COILS_RD)
+//#define MB_WRITE_MASK                       (MB_EVENT_HOLDING_REG_WR | MB_EVENT_COILS_WR)
+//#define MB_READ_WRITE_MASK                  (MB_READ_MASK | MB_WRITE_MASK)
 
 
 #endif // !defined(_DEVICE_mb_PARAMS)

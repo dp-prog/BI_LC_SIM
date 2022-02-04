@@ -16,11 +16,19 @@ extern "C" {
 
 //#include "mb_master.h"
 
+
+#include "esp_modbus_master.h"
 #include "mbcontroller.h"		// for mbcontroller defines and api
 #include "modbus_params.h"		// for modbus parameters structures
+
 //#include "mbcontroller.h"
 
 #include "mb_master.h"
+
+holding_reg_params_t holding_reg_params = { 0 };
+input_reg_params_t input_reg_params = { 0 };
+coil_reg_params_t coil_reg_params = { 0 };
+discrete_reg_params_t discrete_reg_params = { 0 };
 
 // Note: Some pins on target chip cannot be assigned for UART communication.
 // See UART documentation for selected board and target to configure pins using Kconfig.
@@ -65,16 +73,22 @@ enum {
 
 // Enumeration of all supported CIDs for device (used in parameter definition table)
 enum {
-    CID_INP_DATA_0 = 0,
-    CID_HOLD_DATA_0,
-    CID_INP_DATA_1,
-    CID_HOLD_DATA_1,
-    CID_INP_DATA_2,
-    CID_HOLD_DATA_2,
-    CID_HOLD_TEST_REG,
-    CID_RELAY_P1,
-    CID_RELAY_P2,
-    CID_COUNT
+    CID_HOLD_DATA_0,	// BI_ID	0x01	1	uint16	0...65535	Идентификатор БИ
+    CID_HOLD_DATA_1,	// Asc_Device	0x04	4	uint16	0...65535	Номер передаваемого пакета
+    CID_HOLD_DATA_2,	// V_pwr	0x05	5	uint16	(0...+65,535 В)*1000	Напряжение питания БИ
+    CID_HOLD_DATA_3,	// Флаги состояния БИ-М	0x07	7	uint16	0 - вскрытие, 1..3 - дат.коррозии, 4 - системная ошибка	Неисправность, вскрытие, обрыв цепей, ДК (датчики коррозии)
+    CID_HOLD_DATA_4,	// V_Sum_1	0x10	16	int16	(-10...+10 В)*100	Суммарный потенциал 1
+    CID_HOLD_DATA_5,	// V_Pol_1	0x11	17	int16	(-10...+10 В)*100	Поляризационный потенциал 1
+    CID_HOLD_DATA_6,	// I_Pol_1	0x12	18	int16	(-50...+50 мА)*100	Ток поляризации 1
+
+    CID_HOLD_DATA_7,	// Time_Now_Hi	0x30	48	uint16	UnixTime 32-bit	Текущее системное время сервера, старшие 2 байта
+    CID_HOLD_DATA_8,	// Time_Now_Lo	0x31	49	uint16		Текущее системное время сервера, младшие 2 байта
+    CID_HOLD_DATA_9,	// K_V_sum_1	0x33	51	uint16	(0...65535)/10000  (по умолчанию  10000)	Калибровочный коэффициент канала измерения суммарного потенциала
+    CID_HOLD_DATA_10,	// K_V_pol_1	0x34	52	uint16	(0...65535)/10000 (по умолчанию  10000)	Калибровочный коэффициент канала измерения поляризационного потенциала
+    CID_HOLD_DATA_11,	// K_I_pol_1	0x35	53	uint16	(0...65535)/10000 (по умолчанию  10000)	Калибровочный коэффициент канала измерения тока поляризации
+    CID_HOLD_DATA_12,	// Slave_ID	0x3F	63	uint16	0..254	Сетевой адрес подключенного Slave-устройства сбора данных (БИ-М)
+    CID_HOLD_DATA_13,	// Slave_ID_Change	0x40	64	uint16	0...65535	Смена адреса подключенного Slave-устройства сбора данных (1 - сохранение адреса)
+    CID_HOLD_DATA_14,	// Set_BI_ID	0x41	65	uint16	0...65535	Установка идентификатора БИ
 };
 
 // Example Data (Object) Dictionary for Modbus parameters:
@@ -88,15 +102,21 @@ enum {
 // Access Mode - can be used to implement custom options for processing of characteristic (Read/Write restrictions, factory mode values and etc).
 const mb_parameter_descriptor_t device_parameters[] = {
     // { CID, Param Name, Units, Modbus Slave Addr, Modbus Reg Type, Reg Start, Reg Size, Instance Offset, Data Type, Data Size, Parameter Options, Access Mode}
-    { CID_INP_DATA_0, STR("Data_channel_0"), STR("Volts"), MB_DEVICE_ADDR1, MB_PARAM_INPUT, 0, 2, INPUT_OFFSET(input_data0), PARAM_TYPE_FLOAT, 4, OPTS( -10, 10, 1 ), PAR_PERMS_READ_WRITE_TRIGGER },
-    { CID_HOLD_DATA_0, STR("Humidity_1"), STR("%rH"), MB_DEVICE_ADDR1, MB_PARAM_HOLDING, 0, 2, HOLD_OFFSET(holding_data0), PARAM_TYPE_FLOAT, 4, OPTS( 0, 100, 1 ), PAR_PERMS_READ_WRITE_TRIGGER },
-    { CID_INP_DATA_1, STR("Temperature_1"), STR("C"), MB_DEVICE_ADDR1, MB_PARAM_INPUT, 2, 2, INPUT_OFFSET(input_data1), PARAM_TYPE_FLOAT, 4, OPTS( -40, 100, 1 ), PAR_PERMS_READ_WRITE_TRIGGER },
-    { CID_HOLD_DATA_1, STR("Humidity_2"), STR("%rH"), MB_DEVICE_ADDR1, MB_PARAM_HOLDING, 2, 2, HOLD_OFFSET(holding_data1), PARAM_TYPE_FLOAT, 4, OPTS( 0, 100, 1 ), PAR_PERMS_READ_WRITE_TRIGGER },
-    { CID_INP_DATA_2, STR("Temperature_2"), STR("C"), MB_DEVICE_ADDR1, MB_PARAM_INPUT, 4, 2, INPUT_OFFSET(input_data2), PARAM_TYPE_FLOAT, 4, OPTS( -40, 100, 1 ), PAR_PERMS_READ_WRITE_TRIGGER },
-    { CID_HOLD_DATA_2, STR("Humidity_3"), STR("%rH"), MB_DEVICE_ADDR1, MB_PARAM_HOLDING, 4, 2, HOLD_OFFSET(holding_data2), PARAM_TYPE_FLOAT, 4, OPTS( 0, 100, 1 ), PAR_PERMS_READ_WRITE_TRIGGER },
-    { CID_HOLD_TEST_REG, STR("Test_regs"), STR("__"), MB_DEVICE_ADDR1, MB_PARAM_HOLDING, 10, 58, HOLD_OFFSET(test_regs), PARAM_TYPE_ASCII, 116, OPTS( 0, 100, 1 ), PAR_PERMS_READ_WRITE_TRIGGER },
-    { CID_RELAY_P1, STR("RelayP1"), STR("on/off"), MB_DEVICE_ADDR1, MB_PARAM_COIL, 0, 8, COIL_OFFSET(coils_port0), PARAM_TYPE_U16, 2, OPTS( BIT1, 0, 0 ), PAR_PERMS_READ_WRITE_TRIGGER },
-    { CID_RELAY_P2, STR("RelayP2"), STR("on/off"), MB_DEVICE_ADDR1, MB_PARAM_COIL, 8, 8, COIL_OFFSET(coils_port1), PARAM_TYPE_U16, 2, OPTS( BIT0, 0, 0 ), PAR_PERMS_READ_WRITE_TRIGGER }
+	{ CID_HOLD_DATA_0, STR("BI_ID"), STR("DevID"), MB_DEVICE_ADDR1, MB_PARAM_HOLDING, 1, 1, HOLD_OFFSET(holding_data0), PARAM_TYPE_U16, 2, OPTS( 0, 65535, 1 ), PAR_PERMS_READ_WRITE },
+	{ CID_HOLD_DATA_1, STR("Asc_Device"), STR("cnt"), MB_DEVICE_ADDR1, MB_PARAM_HOLDING, 4, 1, HOLD_OFFSET(holding_data0), PARAM_TYPE_U16, 2, OPTS( 0, 65535, 1 ), PAR_PERMS_READ_WRITE },
+	{ CID_HOLD_DATA_2, STR("V_pwr"), STR("V"), MB_DEVICE_ADDR1, MB_PARAM_HOLDING, 5, 1, HOLD_OFFSET(holding_data0), PARAM_TYPE_U16, 2, OPTS( 0, 65535, 1 ), PAR_PERMS_READ_WRITE },
+	{ CID_HOLD_DATA_3, STR("Flags"), STR(""), MB_DEVICE_ADDR1, MB_PARAM_HOLDING, 7, 1, HOLD_OFFSET(holding_data0), PARAM_TYPE_U16, 2, OPTS( 0, 65535, 1 ), PAR_PERMS_READ_WRITE },
+	{ CID_HOLD_DATA_4, STR("V_Sum_1"), STR("V"), MB_DEVICE_ADDR1, MB_PARAM_HOLDING, 16, 1, HOLD_OFFSET(holding_data0), PARAM_TYPE_U16, 2, OPTS( 0, 65535, 1 ), PAR_PERMS_READ_WRITE },
+	{ CID_HOLD_DATA_5, STR("V_Pol_1"), STR("V"), MB_DEVICE_ADDR1, MB_PARAM_HOLDING, 17, 1, HOLD_OFFSET(holding_data0), PARAM_TYPE_U16, 2, OPTS( 0, 65535, 1 ), PAR_PERMS_READ_WRITE },
+	{ CID_HOLD_DATA_6, STR("I_Pol_1"), STR("mA"), MB_DEVICE_ADDR1, MB_PARAM_HOLDING, 18, 1, HOLD_OFFSET(holding_data0), PARAM_TYPE_U16, 2, OPTS( 0, 65535, 1 ), PAR_PERMS_READ_WRITE },
+	{ CID_HOLD_DATA_7, STR("Time_Now_Hi"), STR(""), MB_DEVICE_ADDR1, MB_PARAM_HOLDING, 48, 1, HOLD_OFFSET(holding_data0), PARAM_TYPE_U16, 2, OPTS( 0, 65535, 1 ), PAR_PERMS_READ_WRITE },
+	{ CID_HOLD_DATA_8, STR("Time_Now_Lo"), STR(""), MB_DEVICE_ADDR1, MB_PARAM_HOLDING, 49, 1, HOLD_OFFSET(holding_data0), PARAM_TYPE_U16, 2, OPTS( 0, 65535, 1 ), PAR_PERMS_READ_WRITE },
+	{ CID_HOLD_DATA_9, STR("K_V_sum_1"), STR(""), MB_DEVICE_ADDR1, MB_PARAM_HOLDING, 51, 1, HOLD_OFFSET(holding_data0), PARAM_TYPE_U16, 2, OPTS( 0, 65535, 1 ), PAR_PERMS_READ_WRITE },
+	{ CID_HOLD_DATA_10, STR("K_V_pol_1"), STR(""), MB_DEVICE_ADDR1, MB_PARAM_HOLDING, 52, 1, HOLD_OFFSET(holding_data0), PARAM_TYPE_U16, 2, OPTS( 0, 65535, 1 ), PAR_PERMS_READ_WRITE },
+	{ CID_HOLD_DATA_11, STR("K_I_pol_1"), STR(""), MB_DEVICE_ADDR1, MB_PARAM_HOLDING, 53, 1, HOLD_OFFSET(holding_data0), PARAM_TYPE_U16, 2, OPTS( 0, 65535, 1 ), PAR_PERMS_READ_WRITE },
+	{ CID_HOLD_DATA_12, STR("Slave_ID"), STR(""), MB_DEVICE_ADDR1, MB_PARAM_HOLDING, 63, 1, HOLD_OFFSET(holding_data0), PARAM_TYPE_U16, 2, OPTS( 0, 65535, 1 ), PAR_PERMS_READ_WRITE },
+	{ CID_HOLD_DATA_13, STR("Slave_ID_Change"), STR(""), MB_DEVICE_ADDR1, MB_PARAM_HOLDING, 64, 1, HOLD_OFFSET(holding_data0), PARAM_TYPE_U16, 2, OPTS( 0, 65535, 1 ), PAR_PERMS_READ_WRITE },
+	{ CID_HOLD_DATA_14, STR("Set_BI_ID"), STR("DevID"), MB_DEVICE_ADDR1, MB_PARAM_HOLDING, 65, 1, HOLD_OFFSET(holding_data0), PARAM_TYPE_U16, 2, OPTS( 0, 65535, 1 ), PAR_PERMS_READ_WRITE },
 };
 
 // Calculate number of parameters in the table
