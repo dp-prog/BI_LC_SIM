@@ -1,13 +1,9 @@
-# BI-LC (ESP32 SIM800 ver.0
-
+# BI-LC (ESP32 SIM800 ver.0)
+this project is testing the operation of the module Sim800 with esp32
+not use this code in you projects )))
 
 ## Hardware
-
 ### Connections for ESP32
-
-This example runs on ESP-WROVER-KIT boards without any extra modifications required, only the SD card needs to be inserted into the slot.
-
-Other ESP32 development boards need to be connected to SD card as follows:
 
 ESP32 pin     | SD card pin | SPI pin | Notes
 --------------|-------------|---------|------------
@@ -20,42 +16,8 @@ GPIO13 (MTCK) | D3          | CS      | not used in 1-line SD mode, but card's D
 N/C           | CD          |         | optional, not used in the example
 N/C           | WP          |         | optional, not used in the example
 
-This example doesn't utilize card detect (CD) and write protect (WP) signals from SD card slot.
 
-With the given pinout for SPI mode, same connections between the SD card and ESP32 can be used to test both SD and SPI modes, provided that the appropriate pullups are in place.
-See [the document about pullup requirements](https://docs.espressif.com/projects/esp-idf/en/latest/api-reference/peripherals/sd_pullup_requirements.html) for more details about pullup support and compatibility of modules and development boards.
 
-In SPI mode, pins can be customized. See the initialization of ``spi_bus_config_t`` and ``sdspi_slot_config_t`` structures in the example code.
-
-### Connections for ESP32-S2
-
-Note that ESP32-S2 doesn't include SD Host peripheral and only supports SD over SPI. Therefore only SCK, MOSI, MISO, CS and ground pins need to be connected.
-
-ESP32-S2 pin  | SD card pin | SPI pin | Notes
---------------|-------------|---------|------------
-GPIO14        | CLK         | SCK     | 10k pullup
-GPIO15        | CMD         | MOSI    | 10k pullup
-GPIO2         | D0          | MISO    | 10k pullup
-GPIO13        | D3          | CS      | 10k pullup
-N/C           | CD          |         | optional, not used in the example
-N/C           | WP          |         | optional, not used in the example
-
-In SPI mode, pins can be customized. See the initialization of ``spi_bus_config_t`` and ``sdspi_slot_config_t`` structures in the example code.
-
-### Connections for ESP32-C3
-
-Note that ESP32-C3 doesn't include SD Host peripheral and only supports SD over SPI. Therefore only SCK, MOSI, MISO, CS and ground pins need to be connected.
-
-ESP32-C3 pin  | SD card pin | SPI pin | Notes
---------------|-------------|---------|------------
-GPIO8         | CLK         | SCK     | 10k pullup
-GPIO9         | CMD         | MOSI    | 10k pullup
-GPIO18        | D0          | MISO    | 10k pullup
-GPIO19        | D3          | CS      | 10k pullup
-N/C           | CD          |         | optional, not used in the example
-N/C           | WP          |         | optional, not used in the example
-
-In SPI mode, pins can be customized. See the initialization of ``spi_bus_config_t`` and ``sdspi_slot_config_t`` structures in the example code.
 
 ### Note about GPIO2 (ESP32 only)
 
